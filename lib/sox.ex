@@ -1,7 +1,7 @@
 defmodule Sox do
   @a4_frequency 440
   @a4_note_no 69
-  @bpm 150
+  @bpm 180
 
   @moduledoc """
   Documentation for `Sox`.
@@ -17,12 +17,44 @@ defmodule Sox do
 
   """
   def hello do
-    base_note = [{60, 8}, {0, 8}, {62, 4}, {64, 4}, {65, 4}, {67, 4}, {69, 4}, {71, 4}, {72, 4}]
+    note1 = [
+      {78, 8},
+      {77, 16},
+      {0, 16},
+      {73, 16},
+      {0, 16},
+      {0, 8},
+      {78, 16},
+      {0, 16},
+      {77, 16},
+      {73, 8},
+      {0, 16},
+      {0, 8}
+    ]
 
-    base_note
+    note2 = [{75, 16}, {75, 16}, {0, 16}, {75, 16}, {0, 16}, {75, 8}, {0, 16}]
+    note3 = note_shift(note2, -4)
+    note4 = note_shift(note2, 3)
+
+    note1
+    |> Enum.concat(note1)
+    |> Enum.concat(note2)
+    |> Enum.concat(note3)
+    |> Enum.concat(note2)
+    |> Enum.concat(note4)
+    |> List.duplicate(2)
+    |> List.flatten()
     |> Enum.each(&play(&1))
 
     :ok
+  end
+
+  def note_shift({0, time}, _), do: {0, time}
+  def note_shift({note, time}, shift), do: {note + shift, time}
+
+  def note_shift(notes, shift) when is_list(notes) do
+    notes
+    |> Enum.map(&note_shift(&1, shift))
   end
 
   def note_no_to_frequency(@a4_note_no), do: @a4_frequency
