@@ -7,10 +7,10 @@ defmodule Sox do
   @f4_note_no 65
   @g4_note_no 67
   @a4_note_no 69
-  @b4_note_no 81
+  @b4_note_no 71
   @r_note_no 0
 
-  @bpm 180
+  @bpm 200
 
   @moduledoc """
   Documentation for `Sox`.
@@ -26,12 +26,95 @@ defmodule Sox do
 
   """
   def hello do
+    part_a = """
+    c4 16
+    r4 16
+    c4 16
+    d4 16
+    c4 16
+    d4 16
+    e4 16
+    d4 16
+    e4 16
+    g4 16
+    e4 16
+    g4 16
+    e4 16
+    g4 16
+    a4 16
+    g4 16
+    a4 16
+    c5 16
+    g4 16
+    a4 16
+    c5 16
+    a4 16
+    c5 16
+    d5 16
+    e5 2
+    r5 4
     """
-    a3 8
-    r0 8
+
+    part_b = """
     a4 8
-    a5 8
+    r0 16
+    a4- 8
+    a4 8
+    c5 8
+    r0 16
+    b4 8
+    r0 16
+    a4- 8
+    a4 8
+    r0 16
+    a4- 8
+    r0 16
+    a4 16
+    d4 8
+    r0 16
+    d4+ 8
+    r0 16
+    e4 8
     """
+
+    part_c = """
+    a4 8
+    r0 16
+    a4- 8
+    r0 16
+    g4 16
+    g4- 2
+    g4 8
+    r0 16
+    g4- 8
+    r0 16
+    f4 16
+    e4 2
+
+    d4 8
+    r0 16
+    d4+ 8
+    r0 16
+    e4 16
+    f4 8
+    r0 16
+    f4+ 8
+    r0 16
+    g4 16
+    g4+ 8
+    r0 16
+    a4 8
+    r0 16
+    b4 16
+    c5 8
+    r0 16
+    c5+ 8
+    r0 16
+    d5 16
+    """
+
+    main_part = String.duplicate(part_b, 2) <>  part_c
+    part_a <> String.duplicate(main_part, 2)
     |> text_to_play()
 
     :ok
