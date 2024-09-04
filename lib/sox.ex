@@ -1,6 +1,15 @@
 defmodule Sox do
   @a4_frequency 440
+
+  @c4_note_no 60
+  @d4_note_no 62
+  @e4_note_no 64
+  @f4_note_no 65
+  @g4_note_no 67
   @a4_note_no 69
+  @b4_note_no 81
+  @r_note_no 0
+
   @bpm 180
 
   @moduledoc """
@@ -17,34 +26,9 @@ defmodule Sox do
 
   """
   def hello do
-    note1 = [
-      {78, 8},
-      {77, 16},
-      {0, 16},
-      {73, 16},
-      {0, 16},
-      {0, 8},
-      {78, 16},
-      {0, 16},
-      {77, 16},
-      {73, 8},
-      {0, 16},
-      {0, 8}
-    ]
-
-    note2 = [{75, 16}, {75, 16}, {0, 16}, {75, 16}, {0, 16}, {75, 8}, {0, 16}]
-    note3 = note_shift(note2, -4)
-    note4 = note_shift(note2, 3)
-
-    note1
-    |> Enum.concat(note1)
-    |> Enum.concat(note2)
-    |> Enum.concat(note3)
-    |> Enum.concat(note2)
-    |> Enum.concat(note4)
-    |> List.duplicate(2)
-    |> List.flatten()
-    |> Enum.each(&play(&1))
+    play({"a3", 8})
+    play({"a4", 8})
+    play({"a5", 8})
 
     :ok
   end
@@ -65,7 +49,11 @@ defmodule Sox do
   def note_no_to_frequency(note) when note > @a4_note_no,
     do: @a4_frequency * :math.pow(2, 1 / 12 * (note - @a4_note_no))
 
-  def play({note, time}), do: play(note, time)
+  def play({note, time}) do
+    [alphabet | number] = note |> String.split("") |> Enum.reject(&(&1 == ""))
+    note_no = get_note_no(alphabet) + get_octaval_and_semitone(number)
+    play(note_no, time)
+  end
 
   def play(0, time) do
     sec = get_sec(time)
@@ -86,4 +74,34 @@ defmodule Sox do
   def get_sec(4), do: 60 / @bpm
   def get_sec(8), do: get_sec(4) / 2
   def get_sec(16), do: get_sec(4) / 4
+
+  def get_note_no("c"), do: @c4_note_no
+  def get_note_no("d"), do: @d4_note_no
+  def get_note_no("e"), do: @e4_note_no
+  def get_note_no("f"), do: @f4_note_no
+  def get_note_no("g"), do: @g4_note_no
+  def get_note_no("a"), do: @a4_note_no
+  def get_note_no("b"), do: @b4_note_no
+  def get_note_no("r"), do: @r_note_no
+
+  def get_octaval_and_semitone(number) when length(number) == 2 do
+    [octaval | semitone] = number
+    semitone = List.first(semitone)
+    get_octaval_and_semitone(octaval) + get_semitone(semitone)
+  end
+
+  def get_octaval_and_semitone(number) when length(number) == 1 do
+    List.first(number)
+    |> get_octaval_and_semitone()
+  end
+
+  def get_octaval_and_semitone(number) do
+    String.to_integer(number)
+    |> get_octaval()
+  end
+
+  def get_octaval(octaval), do: (octaval - 4) * 12
+  def get_semitone("+"), do: 1
+  def get_semitone("-"), do: -1
+  def get_semitone("#"), do: 1
 end
