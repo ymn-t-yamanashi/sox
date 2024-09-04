@@ -26,11 +26,28 @@ defmodule Sox do
 
   """
   def hello do
-    play({"a3", 8})
-    play({"a4", 8})
-    play({"a5", 8})
+    """
+    a3 8
+    r0 8
+    a4 8
+    a5 8
+    """
+    |> text_to_play()
 
     :ok
+  end
+
+  def text_to_play(text) do
+    text
+    |> String.split("\n")
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.map(&create_play_syntax(&1))
+    |> Enum.each(&play(&1))
+  end
+
+  def create_play_syntax(line) do
+    [note, time] = line |> String.split(" ")
+    {note, String.to_integer(time)}
   end
 
   def note_shift({0, time}, _), do: {0, time}
