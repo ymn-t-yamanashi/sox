@@ -113,8 +113,9 @@ defmodule Sox do
     d5 16
     """
 
-    main_part = String.duplicate(part_b, 2) <>  part_c
-    part_a <> String.duplicate(main_part, 2)
+    main_part = String.duplicate(part_b, 2) <> part_c
+
+    (part_a <> String.duplicate(main_part, 2))
     |> text_to_play()
 
     :ok
