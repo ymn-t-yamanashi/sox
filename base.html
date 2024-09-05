@@ -1,0 +1,19 @@
+<html>
+    <body onLoad="test()">test</body>
+    <script>
+        function test() {
+            audioCtx = new AudioContext();
+            const oscillator = audioCtx.createOscillator();
+            // oscillator.type = "square";
+            frequency = 440;
+            sec = 1;
+            oscillator.frequency.setValueAtTime(frequency, 0);
+            oscillator.connect(audioCtx.destination);
+            oscillator.start(0);
+            oscillator.stop(10);
+            alert("1111")
+        }
+    </script>
+
+
+</html>
