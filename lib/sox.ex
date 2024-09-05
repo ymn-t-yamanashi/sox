@@ -27,81 +27,13 @@ defmodule Sox do
 
   """
   def hello do
-    part_a = """
-    c4 16
-    r4 16
-    c4 16
-    d4 16
-    c4 16
-    d4 16
-    e4 16
-    d4 16
-    e4 16
-    g4 16
-    e4 16
-    g4 16
-    e4 16
-    g4 16
-    a4 16
-    g4 16
-    a4 16
-    c5 16
-    g4 16
-    a4 16
-    c5 16
-    a4 16
-    c5 16
-    d5 16
-    e5 2.
-    """
-
-    part_b = """
-    a4 8.
-    a4- 8
-    a4 8
-    c5 8.
-    b4 8.
-    a4- 8
-    a4 8.
-    a4- 8.
-    a4 16
-    d4 8.
-    d4+ 8.
-    e4 8
-    """
-
-    part_c = """
-    a4 8.
-    a4- 8.
-    g4 16
-    g4- 2
-    g4 8.
-    g4- 8.
-    f4 16
-    e4 2
-
-    d4 8.
-    d4+ 8.
-    e4 16
-    f4 8.
-    f4+ 8.
-    g4 16
-    g4+ 8.
-    a4 8.
-    b4 16
-    c5 8.
-    c5+ 8.
-    d5 16
-    """
-
-    main_part = String.duplicate(part_b, 2) <> part_c
-
-    (part_a <> String.duplicate(main_part, 2))
+    File.read!("music.txt")
     |> text_to_play()
 
     :ok
   end
 
+  @spec text_to_play(binary()) :: :ok
   def text_to_play(text) do
     text
     |> String.split("\n")
