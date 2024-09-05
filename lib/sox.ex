@@ -33,26 +33,42 @@ defmodule Sox do
     :ok
   end
 
-  @spec text_to_play(binary()) :: :ok
   def text_to_play(text) do
-    text
-    |> String.split("\n")
-    |> Enum.reject(&(&1 == ""))
+    [parts | main] =
+      text
+      |> String.split("main ")
+
+    part_map =
+      get_list_part(parts)
+      |> Enum.map(&create_part_keyword(&1))
+
+    main
+    |> List.first()
+    |> String.split(" ")
+    |> Enum.map(&Keyword.get(part_map, String.to_atom(&1)))
+    |> List.flatten()
     |> Enum.map(&create_play_syntax(&1))
     |> Enum.each(&play(&1))
+  end
+
+  def get_list_part(parts) do
+    parts
+    |> String.split("part")
+    |> Enum.reject(&(&1 == ""))
+  end
+
+  def create_part_keyword(part) do
+    [part_name | part_data] =
+      part
+      |> String.split("\n")
+      |> Enum.reject(&(&1 == ""))
+
+    {String.to_atom(part_name), part_data}
   end
 
   def create_play_syntax(line) do
     [note, time] = line |> String.split(" ")
     {note, time}
-  end
-
-  def note_shift({0, time}, _), do: {0, time}
-  def note_shift({note, time}, shift), do: {note + shift, time}
-
-  def note_shift(notes, shift) when is_list(notes) do
-    notes
-    |> Enum.map(&note_shift(&1, shift))
   end
 
   def note_no_to_frequency(@a4_note_no), do: @a4_frequency
