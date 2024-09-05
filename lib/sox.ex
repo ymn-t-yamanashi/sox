@@ -9,6 +9,7 @@ defmodule Sox do
   @a4_note_no 69
   @b4_note_no 71
   @r_note_no 0
+  @dotted_note 1.5
 
   @bpm 200
 
@@ -51,65 +52,45 @@ defmodule Sox do
     a4 16
     c5 16
     d5 16
-    e5 2
-    r5 4
+    e5 2.
     """
 
     part_b = """
-    a4 8
-    r0 16
+    a4 8.
     a4- 8
     a4 8
-    c5 8
-    r0 16
-    b4 8
-    r0 16
+    c5 8.
+    b4 8.
     a4- 8
-    a4 8
-    r0 16
-    a4- 8
-    r0 16
+    a4 8.
+    a4- 8.
     a4 16
-    d4 8
-    r0 16
-    d4+ 8
-    r0 16
+    d4 8.
+    d4+ 8.
     e4 8
     """
 
     part_c = """
-    a4 8
-    r0 16
-    a4- 8
-    r0 16
+    a4 8.
+    a4- 8.
     g4 16
     g4- 2
-    g4 8
-    r0 16
-    g4- 8
-    r0 16
+    g4 8.
+    g4- 8.
     f4 16
     e4 2
 
-    d4 8
-    r0 16
-    d4+ 8
-    r0 16
+    d4 8.
+    d4+ 8.
     e4 16
-    f4 8
-    r0 16
-    f4+ 8
-    r0 16
+    f4 8.
+    f4+ 8.
     g4 16
-    g4+ 8
-    r0 16
-    a4 8
-    r0 16
+    g4+ 8.
+    a4 8.
     b4 16
-    c5 8
-    r0 16
-    c5+ 8
-    r0 16
+    c5 8.
+    c5+ 8.
     d5 16
     """
 
@@ -131,7 +112,7 @@ defmodule Sox do
 
   def create_play_syntax(line) do
     [note, time] = line |> String.split(" ")
-    {note, String.to_integer(time)}
+    {note, time}
   end
 
   def note_shift({0, time}, _), do: {0, time}
@@ -170,11 +151,16 @@ defmodule Sox do
 
   def play_cmd(frequency, time), do: System.cmd("play", ~w"-n synth #{time} sin #{frequency}")
 
-  def get_sec(1), do: get_sec(4) * 4
-  def get_sec(2), do: get_sec(4) * 2
-  def get_sec(4), do: 60 / @bpm
-  def get_sec(8), do: get_sec(4) / 2
-  def get_sec(16), do: get_sec(4) / 4
+  def get_sec("1"), do: get_sec("4") * 4
+  def get_sec("1."), do: get_sec("1") * @dotted_note
+  def get_sec("2"), do: get_sec("4") * 2
+  def get_sec("2."), do: get_sec("2") * @dotted_note
+  def get_sec("4"), do: 60 / @bpm
+  def get_sec("4."), do: get_sec("4") * @dotted_note
+  def get_sec("8"), do: get_sec("4") / 2
+  def get_sec("8."), do: get_sec("8") * @dotted_note
+  def get_sec("16"), do: get_sec("4") / 4
+  def get_sec("16."), do: get_sec("16") * @dotted_note
 
   def get_note_no("c"), do: @c4_note_no
   def get_note_no("d"), do: @d4_note_no
