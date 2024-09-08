@@ -54,7 +54,8 @@ defmodule Sox do
     |> List.flatten()
     |> Enum.map(&create_play_syntax(&1))
     |> Enum.with_index(1)
-    |> Enum.each(&sox(&1))
+    |> Enum.map(&sox(&1))
+    |> Enum.map(&Task.await(&1))
 
     sox_merge_cmd()
     aplay_cmd()
@@ -102,14 +103,14 @@ defmodule Sox do
 
   def sox(0, time, file_name) do
     sec = get_sec(time)
-    sox_cmd(0, sec, file_name)
+    Task.async(fn -> sox_cmd(0, sec, file_name) end)
   end
 
   def sox(note, time, file_name) do
     sec = get_sec(time)
 
-    note_no_to_frequency(note)
-    |> sox_cmd(sec, file_name)
+    frequency = note_no_to_frequency(note)
+    Task.async(fn -> sox_cmd(frequency, sec, file_name) end)
   end
 
   def sox_cmd(frequency, time, file_name),
