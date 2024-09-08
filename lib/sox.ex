@@ -11,7 +11,9 @@ defmodule Sox do
   @r_note_no 0
   @dotted_note 1.5
 
-  @bpm 200
+  @bpm 150
+  @tmp_dir "/dev/shm/sox_ymn"
+  @play_file_name "ymn.wav"
 
   @moduledoc """
   Documentation for `Sox`.
@@ -27,6 +29,9 @@ defmodule Sox do
 
   """
   def hello do
+    File.rm_rf(@tmp_dir)
+    File.mkdir(@tmp_dir)
+
     File.read!("music.txt")
     |> text_to_play()
 
@@ -48,7 +53,11 @@ defmodule Sox do
     |> Enum.map(&Keyword.get(part_map, String.to_atom(&1)))
     |> List.flatten()
     |> Enum.map(&create_play_syntax(&1))
-    |> Enum.each(&play(&1))
+    |> Enum.with_index(1)
+    |> Enum.each(&sox(&1))
+
+    sox_merge_cmd()
+    aplay_cmd()
   end
 
   def get_list_part(parts) do
@@ -79,25 +88,35 @@ defmodule Sox do
   def note_no_to_frequency(note) when note > @a4_note_no,
     do: @a4_frequency * :math.pow(2, 1 / 12 * (note - @a4_note_no))
 
-  def play({note, time}) do
+  def sox({{note, time}, index}) do
+    file_name =
+      index
+      |> Integer.to_string()
+      |> String.pad_leading(10, "0")
+      |> then(&"#{@tmp_dir}/#{&1}.wav")
+
     [alphabet | number] = note |> String.split("") |> Enum.reject(&(&1 == ""))
     note_no = get_note_no(alphabet) + get_octaval_and_semitone(number)
-    play(note_no, time)
+    sox(note_no, time, file_name)
   end
 
-  def play(0, time) do
+  def sox(0, time, file_name) do
     sec = get_sec(time)
-    play_cmd(0, sec)
+    sox_cmd(0, sec, file_name)
   end
 
-  def play(note, time) do
+  def sox(note, time, file_name) do
     sec = get_sec(time)
 
     note_no_to_frequency(note)
-    |> play_cmd(sec)
+    |> sox_cmd(sec, file_name)
   end
 
-  def play_cmd(frequency, time), do: System.cmd("play", ~w"-n synth #{time} sin #{frequency}")
+  def sox_cmd(frequency, time, file_name),
+    do: System.cmd("sox", ~w"-n #{file_name} synth #{time} sin #{frequency}")
+
+  def sox_merge_cmd(), do: System.cmd("sox", ~w"#{@tmp_dir}/*.wav #{@tmp_dir}/#{@play_file_name}")
+  def aplay_cmd(), do: System.cmd("aplay", ~w"#{@tmp_dir}/#{@play_file_name}")
 
   def get_sec("1"), do: get_sec("4") * 4
   def get_sec("1."), do: get_sec("1") * @dotted_note
