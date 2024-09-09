@@ -20,19 +20,18 @@ defmodule Sox do
   """
 
   @doc """
-  Hello world.
+  曲を再生します
 
   ## Examples
 
-      iex> Sox.hello()
+      iex> Sox.play("music1.txt")
       :ok
-
   """
-  def hello do
+  def play(file_name) do
     File.rm_rf(@tmp_dir)
     File.mkdir(@tmp_dir)
 
-    File.read!("music.txt")
+    File.read!(file_name)
     |> text_to_play()
 
     :ok
