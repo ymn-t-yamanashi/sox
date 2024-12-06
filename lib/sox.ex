@@ -11,7 +11,7 @@ defmodule Sox do
   @r_note_no 0
   @dotted_note 1.5
 
-  @bpm 150
+  @bpm 200
   @tmp_dir "/dev/shm/sox_ymn"
   @play_file_name "ymn.wav"
 
